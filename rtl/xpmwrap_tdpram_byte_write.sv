@@ -26,7 +26,7 @@ module xpmwrap_dpdistram_byte_write #(
     input  logic enb,
     input  logic regceb,
     input  logic clkb,
-    input  logic rstb,
+    input  logic rstb
 );
 
 localparam MEMORY_SIZE = ((2**ADDR_WIDTH_A) * WRITE_DATA_WIDTH_A);

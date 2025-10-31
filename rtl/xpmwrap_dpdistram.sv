@@ -18,7 +18,7 @@ module xpmwrap_dpdistram #(
     // Port B
     output logic [READ_DATA_WIDTH_B-1:0] doutb,
     input  logic [ADDR_WIDTH_B-1:0] addrb,
-    input  logic ena,
+    input  logic enb,
     input  logic regceb,
     input  logic clkb,
     input  logic rstb

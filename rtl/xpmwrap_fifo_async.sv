@@ -1,3 +1,14 @@
+//    Setting USE_ADV_FEATURES[0] to 1 enables overflow flag; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[1] to 1 enables prog_full flag; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[2] to 1 enables wr_data_count; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[3] to 1 enables almost_full flag; Default value of this bit is 0
+//    Setting USE_ADV_FEATURES[4] to 1 enables wr_ack flag; Default value of this bit is 0
+//    Setting USE_ADV_FEATURES[8] to 1 enables underflow flag; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[9] to 1 enables prog_empty flag; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[10] to 1 enables rd_data_count; Default value of this bit is 1
+//    Setting USE_ADV_FEATURES[11] to 1 enables almost_empty flag; Default value of this bit is 0
+//    Setting USE_ADV_FEATURES[12] to 1 enables data_valid flag; Default value of this bit is 0
+
 module xpmwrap_fifo_async #(
     parameter FIFO_WRITE_DEPTH = 2048,
     parameter WRITE_DATA_WIDTH = 32,
@@ -31,17 +42,6 @@ module xpmwrap_fifo_async #(
     input  logic wr_clk,
     input  logic rst
 );
-
-//    Setting USE_ADV_FEATURES[0] to 1 enables overflow flag; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[1] to 1 enables prog_full flag; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[2] to 1 enables wr_data_count; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[3] to 1 enables almost_full flag; Default value of this bit is 0
-//    Setting USE_ADV_FEATURES[4] to 1 enables wr_ack flag; Default value of this bit is 0
-//    Setting USE_ADV_FEATURES[8] to 1 enables underflow flag; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[9] to 1 enables prog_empty flag; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[10] to 1 enables rd_data_count; Default value of this bit is 1
-//    Setting USE_ADV_FEATURES[11] to 1 enables almost_empty flag; Default value of this bit is 0
-//    Setting USE_ADV_FEATURES[12] to 1 enables data_valid flag; Default value of this bit is 0
 
 logic dbiterr;
 logic sbiterr;

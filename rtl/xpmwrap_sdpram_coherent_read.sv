@@ -11,7 +11,7 @@ module xpmwrap_sdpram_coherent_read #(
     // Port B
     output logic [DATA_WIDTH-1:0] doutb,
     input  logic [ADDR_WIDTH-1:0] addrb,
-    input  logic ena,
+    input  logic enb,
     input  logic regceb,
     input  logic rstb
 );
