@@ -1,7 +1,9 @@
 module xpmwrap_spram #(
     parameter ADDR_WIDTH_A = 6,
     parameter READ_DATA_WIDTH_A = 32,
-    parameter WRITE_DATA_WIDTH_A = 32
+    parameter WRITE_DATA_WIDTH_A = 32,
+    parameter WAKEUP_TIME = 0,
+    parameter ECC_MODE = 0
 ) (
     // Port A
     output logic [READ_DATA_WIDTH_A-1:0] douta,
@@ -11,19 +13,16 @@ module xpmwrap_spram #(
     input  logic ena,
     input  logic regcea,
     input  logic clka,
-    input  logic rsta
+    input  logic rsta,
+    // miscellaneous
+    output logic dbiterra,
+    output logic sbiterra,
+    input  logic injectdbiterra,
+    input  logic injectsbiterra,
+    input  logic sleep
 );
 
 localparam MEMORY_SIZE = ((2**ADDR_WIDTH_A) * WRITE_DATA_WIDTH_A);
-logic dbiterra;
-logic sbiterra;
-logic injectdbiterra;
-logic injectsbiterra;
-logic sleep;
-
-assign injectdbiterra = '0;
-assign injectsbiterra = '0;
-assign sleep = '0;
 
 // xpm_memory_spram: Single Port RAM
 // Xilinx Parameterized Macro, version 2025.1
@@ -34,7 +33,7 @@ xpm_memory_spram #(
    .BYTE_WRITE_WIDTH_A(WRITE_DATA_WIDTH_A),       // DECIMAL
    .CASCADE_HEIGHT(0),            // DECIMAL
    .ECC_BIT_RANGE("7:0"),         // String
-   .ECC_MODE("no_ecc"),           // String
+   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String 	"no_ecc", "en_ecc"
    .ECC_TYPE("none"),             // String
    .IGNORE_INIT_SYNTH(0),         // DECIMAL
    .MEMORY_INIT_FILE("none"),     // String
@@ -51,7 +50,7 @@ xpm_memory_spram #(
    .SIM_ASSERT_CHK(0),            // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
    .USE_MEM_INIT(1),              // DECIMAL
    .USE_MEM_INIT_MMI(0),          // DECIMAL
-   .WAKEUP_TIME("disable_sleep"), // String     "disable_sleep", "use_sleep_pin"
+   .WAKEUP_TIME(WAKEUP_TIME ? "use_sleep_pin" : "disable_sleep"), // String     "disable_sleep", "use_sleep_pin"
    .WRITE_DATA_WIDTH_A(WRITE_DATA_WIDTH_A),       // DECIMAL
    .WRITE_MODE_A("read_first"),   // String     "read_first", "no_change", "write_first"
    .WRITE_PROTECT(1)              // DECIMAL
@@ -66,17 +65,17 @@ xpm_memory_spram_inst (
    .ena(ena),                       // 1-bit input: Memory enable signal for port A. Must be high on clock cycles when read or write operations
                                     // are initiated. Pipelined internally.
 
-   .injectdbiterra(injectdbiterra), // 1-bit input: Controls double bit error injection on input data when ECC enabled (Error injection capability
+   .injectdbiterra(ECC_MODE ? injectdbiterra : '0), // 1-bit input: Controls double bit error injection on input data when ECC enabled (Error injection capability
                                     // is not available in "decode_only" mode).
 
-   .injectsbiterra(injectsbiterra), // 1-bit input: Controls single bit error injection on input data when ECC enabled (Error injection capability
+   .injectsbiterra(ECC_MODE ? injectsbiterra : '0), // 1-bit input: Controls single bit error injection on input data when ECC enabled (Error injection capability
                                     // is not available in "decode_only" mode).
 
    .regcea(regcea),                 // 1-bit input: Clock Enable for the last register stage on the output data path.
    .rsta(rsta),                     // 1-bit input: Reset signal for the final port A output register stage. Synchronously resets output port
                                     // douta to the value specified by parameter READ_RESET_VALUE_A.
 
-   .sleep(sleep),                   // 1-bit input: sleep signal to enable the dynamic power saving feature.
+   .sleep(WAKEUP_TIME ? sleep : '0),// 1-bit input: sleep signal to enable the dynamic power saving feature.
    .wea(wea)                        // WRITE_DATA_WIDTH_A/BYTE_WRITE_WIDTH_A-bit input: Write enable vector for port A input data port dina. 1 bit
                                     // wide when word-wide writes are used. In byte-wide write configurations, each bit controls the writing one
                                     // byte of dina to address addra. For example, to synchronously write only bits [15-8] of dina when

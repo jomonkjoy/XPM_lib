@@ -15,9 +15,11 @@ module xpmwrap_fifo_sync #(
     parameter READ_DATA_WIDTH = 32,
     parameter PROG_EMPTY_THRESH = 10,
     parameter PROG_FULL_THRESH = 10,
+    parameter USE_ADV_FEATURES = "0707",
     parameter ASYMETRIC_MODE = 0,
     parameter READ_MODE_FWFT = 0,
-    parameter USE_ADV_FEATURES = "0707"
+    parameter WAKEUP_TIME = 0,
+    parameter ECC_MODE = 0
 ) (
     // Read port
     output logic [(ASYMETRIC_MODE ? READ_DATA_WIDTH : WRITE_DATA_WIDTH)-1:0] dout,
@@ -40,17 +42,14 @@ module xpmwrap_fifo_sync #(
     input  logic [WRITE_DATA_WIDTH-1:0] din,
     input  logic wr_en,
     input  logic wr_clk,
-    input  logic rst
+    input  logic rst,
+    // miscellaneous
+    output logic dbiterr,
+    output logic sbiterr,
+    input  logic injectdbiterr,
+    input  logic injectsbiterr,
+    input  logic sleep
 );
-
-logic dbiterr;
-logic sbiterr;
-logic injectdbiterr;
-logic injectsbiterr;
-logic sleep;
-assign injectdbiterr = '0;
-assign injectsbiterr = '0;
-assign sleep = '0;
 
 // xpm_fifo_sync: Synchronous FIFO
 // Xilinx Parameterized Macro, version 2025.1
@@ -58,7 +57,7 @@ assign sleep = '0;
 xpm_fifo_sync #(
    .CASCADE_HEIGHT(0),            // DECIMAL
    .DOUT_RESET_VALUE("0"),        // String
-   .ECC_MODE("no_ecc"),           // String
+   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String 	"no_ecc", "en_ecc"
    .EN_SIM_ASSERT_ERR("warning"), // String
    .FIFO_MEMORY_TYPE("auto"),     // String     "auto", "block", "distributed"
    .FIFO_READ_LATENCY(1),         // DECIMAL
@@ -71,7 +70,7 @@ xpm_fifo_sync #(
    .READ_MODE(READ_MODE_FWFT ? "fwft" : "std"),// String     "std", "fwft"
    .SIM_ASSERT_CHK(0),            // DECIMAL; 0=disable simulation messages, 1=enable simulation messages
    .USE_ADV_FEATURES(USE_ADV_FEATURES),     // String
-   .WAKEUP_TIME(0),               // DECIMAL
+   .WAKEUP_TIME(WAKEUP_TIME),               // DECIMAL
    .WRITE_DATA_WIDTH(WRITE_DATA_WIDTH),         // DECIMAL
    .WR_DATA_COUNT_WIDTH($clog2(FIFO_WRITE_DEPTH)+1)        // DECIMAL
 )
@@ -123,10 +122,10 @@ xpm_fifo_sync_inst (
                                   // state.
 
    .din(din),                     // WRITE_DATA_WIDTH-bit input: Write Data: The input data bus used when writing the FIFO.
-   .injectdbiterr(injectdbiterr), // 1-bit input: Double Bit Error Injection: Injects a double bit error if the ECC feature is used on block RAMs
+   .injectdbiterr(ECC_MODE ? injectdbiterr : '0), // 1-bit input: Double Bit Error Injection: Injects a double bit error if the ECC feature is used on block RAMs
                                   // or UltraRAM macros.
 
-   .injectsbiterr(injectsbiterr), // 1-bit input: Single Bit Error Injection: Injects a single bit error if the ECC feature is used on block RAMs
+   .injectsbiterr(ECC_MODE ? injectsbiterr : '0), // 1-bit input: Single Bit Error Injection: Injects a single bit error if the ECC feature is used on block RAMs
                                   // or UltraRAM macros.
 
    .rd_en(rd_en),                 // 1-bit input: Read Enable: If the FIFO is not empty, asserting this signal causes data (on dout) to be read
@@ -135,7 +134,7 @@ xpm_fifo_sync_inst (
    .rst(rst),                     // 1-bit input: Reset: Must be synchronous to wr_clk. The clock(s) can be unstable at the time of applying
                                   // reset, but reset must be released only after the clock(s) is/are stable.
 
-   .sleep(sleep),                 // 1-bit input: Dynamic power saving- If sleep is High, the memory/fifo block is in power saving mode.
+   .sleep(WAKEUP_TIME ? sleep : '0), // 1-bit input: Dynamic power saving- If sleep is High, the memory/fifo block is in power saving mode.
    .wr_clk(wr_clk),               // 1-bit input: Write clock: Used for write operation. wr_clk must be a free running clock.
    .wr_en(wr_en)                  // 1-bit input: Write Enable: If the FIFO is not full, asserting this signal causes data (on din) to be written
                                   // to the FIFO Must be held active-low when rst or wr_rst_busy or rd_rst_busy is active high
