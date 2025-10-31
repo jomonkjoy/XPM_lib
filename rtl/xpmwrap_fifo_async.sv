@@ -15,11 +15,12 @@ module xpmwrap_fifo_async #(
     parameter READ_DATA_WIDTH = 32,
     parameter PROG_EMPTY_THRESH = 10,
     parameter PROG_FULL_THRESH = 10,
+    parameter ASYMETRIC_MODE = 0,
     parameter READ_MODE_FWFT = 0,
     parameter USE_ADV_FEATURES = "0707"
 ) (
     // Read port
-    output logic [READ_DATA_WIDTH-1:0] dout,
+    output logic [(ASYMETRIC_MODE ? READ_DATA_WIDTH : WRITE_DATA_WIDTH)-1:0] dout,
     output logic data_valid,
     output logic underflow,
     output logic almost_empty,
@@ -68,7 +69,7 @@ xpm_fifo_async #(
    .PROG_EMPTY_THRESH(PROG_EMPTY_THRESH),        // DECIMAL
    .PROG_FULL_THRESH(PROG_FULL_THRESH),         // DECIMAL
    .RD_DATA_COUNT_WIDTH($clog2(FIFO_WRITE_DEPTH)+1),       // DECIMAL
-   .READ_DATA_WIDTH(READ_DATA_WIDTH),          // DECIMAL
+   .READ_DATA_WIDTH(ASYMETRIC_MODE ? READ_DATA_WIDTH : WRITE_DATA_WIDTH),          // DECIMAL
    .READ_MODE(READ_MODE_FWFT ? "fwft" : "std"),// String     "std", "fwft"
    .RELATED_CLOCKS(0),            // DECIMAL
    .SIM_ASSERT_CHK(0),            // DECIMAL; 0=disable simulation messages, 1=enable simulation messages

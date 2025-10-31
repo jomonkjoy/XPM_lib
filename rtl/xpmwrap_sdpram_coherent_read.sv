@@ -1,22 +1,22 @@
 module xpmwrap_sdpram_coherent_read #(
-    parameter ADDR_WIDTH = 6,
-    parameter DATA_WIDTH = 32
+    parameter ADDR_WIDTH_A = 6,
+    parameter WRITE_DATA_WIDTH_A = 32
 ) (
     // Port A
-    input  logic [DATA_WIDTH-1:0] dina,
-    input  logic [ADDR_WIDTH-1:0] addra,
+    input  logic [WRITE_DATA_WIDTH_A-1:0] dina,
+    input  logic [ADDR_WIDTH_A-1:0] addra,
     input  logic wea,
     input  logic ena,
     input  logic clka,
     // Port B
-    output logic [DATA_WIDTH-1:0] doutb,
-    input  logic [ADDR_WIDTH-1:0] addrb,
+    output logic [WRITE_DATA_WIDTH_A-1:0] doutb,
+    input  logic [ADDR_WIDTH_A-1:0] addrb,
     input  logic enb,
     input  logic regceb,
     input  logic rstb
 );
 
-localparam MEMORY_SIZE = ((2**ADDR_WIDTH) * DATA_WIDTH);
+localparam MEMORY_SIZE = ((2**ADDR_WIDTH_A) * WRITE_DATA_WIDTH_A);
 logic dbiterrb;
 logic sbiterrb;
 logic injectdbiterra;
@@ -33,10 +33,10 @@ assign clkb = '0;
 // Xilinx Parameterized Macro, version 2025.1
 
 xpm_memory_sdpram #(
-   .ADDR_WIDTH_A(ADDR_WIDTH),               // DECIMAL
-   .ADDR_WIDTH_B(ADDR_WIDTH),               // DECIMAL
+   .ADDR_WIDTH_A(ADDR_WIDTH_A),               // DECIMAL
+   .ADDR_WIDTH_B(ADDR_WIDTH_A),               // DECIMAL
    .AUTO_SLEEP_TIME(0),            // DECIMAL
-   .BYTE_WRITE_WIDTH_A(DATA_WIDTH),        // DECIMAL
+   .BYTE_WRITE_WIDTH_A(WRITE_DATA_WIDTH_A),        // DECIMAL
    .CASCADE_HEIGHT(0),             // DECIMAL
    .CLOCKING_MODE("common_clock"), // String
    .ECC_BIT_RANGE("7:0"),          // String
@@ -50,7 +50,7 @@ xpm_memory_sdpram #(
    .MEMORY_SIZE(MEMORY_SIZE),      // DECIMAL
    .MESSAGE_CONTROL(0),            // DECIMAL
    .RAM_DECOMP("auto"),            // String
-   .READ_DATA_WIDTH_B(DATA_WIDTH),         // DECIMAL
+   .READ_DATA_WIDTH_B(WRITE_DATA_WIDTH_A),         // DECIMAL
    .READ_LATENCY_B(2),             // DECIMAL
    .READ_RESET_VALUE_B("0"),       // String
    .RST_MODE_A("SYNC"),            // String    "SYNC", "ASYNC"
@@ -60,7 +60,7 @@ xpm_memory_sdpram #(
    .USE_MEM_INIT(1),               // DECIMAL
    .USE_MEM_INIT_MMI(0),           // DECIMAL
    .WAKEUP_TIME("disable_sleep"),  // String    "disable_sleep", "use_sleep_pin"
-   .WRITE_DATA_WIDTH_A(DATA_WIDTH),        // DECIMAL
+   .WRITE_DATA_WIDTH_A(WRITE_DATA_WIDTH_A),        // DECIMAL
    .WRITE_MODE_B("write_first"),   // String    "no_change", "read_first", "write_first"
    .WRITE_PROTECT(1)               // DECIMAL
 )

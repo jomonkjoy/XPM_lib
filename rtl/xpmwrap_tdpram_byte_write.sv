@@ -1,4 +1,4 @@
-module xpmwrap_dpdistram_byte_write #(
+module xpmwrap_tdpram_byte_write #(
     parameter ADDR_WIDTH_A = 6,
     parameter ADDR_WIDTH_B = 6,
     parameter READ_DATA_WIDTH_A = 32,
@@ -7,6 +7,7 @@ module xpmwrap_dpdistram_byte_write #(
     parameter BYTE_WRITE_WIDTH_A = 8,
     parameter WRITE_DATA_WIDTH_B = 32,
     parameter BYTE_WRITE_WIDTH_B = 8,
+    parameter ASYMETRIC_MODE = 0,
     parameter CLOCKING_MODE = 0
 ) (
     // Port A
@@ -19,10 +20,10 @@ module xpmwrap_dpdistram_byte_write #(
     input  logic clka,
     input  logic rsta,
     // Port B
-    output logic [READ_DATA_WIDTH_B-1:0] doutb,
-    input  logic [WRITE_DATA_WIDTH_B-1:0] dinb,
-    input  logic [ADDR_WIDTH_B-1:0] addrb,
-    input  logic [WRITE_DATA_WIDTH_B/BYTE_WRITE_WIDTH_B-1:0] web,
+    output logic [(ASYMETRIC_MODE ? READ_DATA_WIDTH_B : READ_DATA_WIDTH_A)-1:0] doutb,
+    input  logic [(ASYMETRIC_MODE ? WRITE_DATA_WIDTH_B : WRITE_DATA_WIDTH_A)-1:0] dinb,
+    input  logic [(ASYMETRIC_MODE ? ADDR_WIDTH_B : ADDR_WIDTH_A)-1:0] addrb,
+    input  logic [(ASYMETRIC_MODE ? WRITE_DATA_WIDTH_B/BYTE_WRITE_WIDTH_B : WRITE_DATA_WIDTH_A/BYTE_WRITE_WIDTH_A)-1:0] web,
     input  logic enb,
     input  logic regceb,
     input  logic clkb,
@@ -47,10 +48,10 @@ assign sleep = '0;
 
 xpm_memory_tdpram #(
    .ADDR_WIDTH_A(ADDR_WIDTH_A),               // DECIMAL
-   .ADDR_WIDTH_B(ADDR_WIDTH_B),               // DECIMAL
+   .ADDR_WIDTH_B(ASYMETRIC_MODE ? ADDR_WIDTH_B : ADDR_WIDTH_A),               // DECIMAL
    .AUTO_SLEEP_TIME(0),            // DECIMAL
    .BYTE_WRITE_WIDTH_A(BYTE_WRITE_WIDTH_A),        // DECIMAL
-   .BYTE_WRITE_WIDTH_B(BYTE_WRITE_WIDTH_B),        // DECIMAL
+   .BYTE_WRITE_WIDTH_B(ASYMETRIC_MODE ? BYTE_WRITE_WIDTH_B : BYTE_WRITE_WIDTH_A),        // DECIMAL
    .CASCADE_HEIGHT(0),             // DECIMAL
    .CLOCKING_MODE(CLOCKING_MODE ? "independent_clock" : "common_clock"), // String
    .ECC_BIT_RANGE("7:0"),          // String
@@ -64,8 +65,8 @@ xpm_memory_tdpram #(
    .MEMORY_SIZE(2048),             // DECIMAL
    .MESSAGE_CONTROL(0),            // DECIMAL
    .RAM_DECOMP("auto"),            // String
-   .READ_DATA_WIDTH_A(32),         // DECIMAL
-   .READ_DATA_WIDTH_B(32),         // DECIMAL
+   .READ_DATA_WIDTH_A(READ_DATA_WIDTH_A),         // DECIMAL
+   .READ_DATA_WIDTH_B(ASYMETRIC_MODE ? READ_DATA_WIDTH_B : READ_DATA_WIDTH_A),         // DECIMAL
    .READ_LATENCY_A(2),             // DECIMAL
    .READ_LATENCY_B(2),             // DECIMAL
    .READ_RESET_VALUE_A("0"),       // String
@@ -78,7 +79,7 @@ xpm_memory_tdpram #(
    .USE_MEM_INIT_MMI(0),           // DECIMAL
    .WAKEUP_TIME("disable_sleep"),  // String    "disable_sleep", "use_sleep_pin"
    .WRITE_DATA_WIDTH_A(WRITE_DATA_WIDTH_A),        // DECIMAL
-   .WRITE_DATA_WIDTH_B(WRITE_DATA_WIDTH_B),        // DECIMAL
+   .WRITE_DATA_WIDTH_B(ASYMETRIC_MODE ? WRITE_DATA_WIDTH_B : WRITE_DATA_WIDTH_A),        // DECIMAL
    .WRITE_MODE_A("no_change"),     // String    "no_change", "read_first", "write_first"
    .WRITE_MODE_B("no_change"),     // String    "no_change", "read_first", "write_first"
    .WRITE_PROTECT(1)               // DECIMAL

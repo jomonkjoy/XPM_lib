@@ -5,6 +5,7 @@ module xpmwrap_dpdistram_byte_write #(
     parameter READ_DATA_WIDTH_B = 32,
     parameter WRITE_DATA_WIDTH_A = 32,
     parameter BYTE_WRITE_WIDTH_A = 8,
+    parameter ASYMETRIC_MODE = 0,
     parameter CLOCKING_MODE = 0
 ) (
     // Port A
@@ -17,8 +18,8 @@ module xpmwrap_dpdistram_byte_write #(
     input  logic clka,
     input  logic rsta,
     // Port B
-    output logic [READ_DATA_WIDTH_B-1:0] doutb,
-    input  logic [ADDR_WIDTH_B-1:0] addrb,
+    output logic [(ASYMETRIC_MODE ? READ_DATA_WIDTH_B : READ_DATA_WIDTH_A)-1:0] doutb,
+    input  logic [(ASYMETRIC_MODE ? ADDR_WIDTH_B : ADDR_WIDTH_A)-1:0] addrb,
     input  logic enb,
     input  logic regceb,
     input  logic clkb,
@@ -32,7 +33,7 @@ localparam MEMORY_SIZE = ((2**ADDR_WIDTH_A) * WRITE_DATA_WIDTH_A);
 
 xpm_memory_dpdistram #(
    .ADDR_WIDTH_A(ADDR_WIDTH_A),               // DECIMAL
-   .ADDR_WIDTH_B(ADDR_WIDTH_B),               // DECIMAL
+   .ADDR_WIDTH_B(ASYMETRIC_MODE ? ADDR_WIDTH_B : ADDR_WIDTH_A),               // DECIMAL
    .BYTE_WRITE_WIDTH_A(BYTE_WRITE_WIDTH_A),        // DECIMAL
    .CLOCKING_MODE(CLOCKING_MODE ? "independent_clock" : "common_clock"), // String
    .IGNORE_INIT_SYNTH(0),          // DECIMAL
@@ -42,7 +43,7 @@ xpm_memory_dpdistram #(
    .MEMORY_SIZE(MEMORY_SIZE),             // DECIMAL
    .MESSAGE_CONTROL(0),            // DECIMAL
    .READ_DATA_WIDTH_A(READ_DATA_WIDTH_A),         // DECIMAL
-   .READ_DATA_WIDTH_B(READ_DATA_WIDTH_B),         // DECIMAL
+   .READ_DATA_WIDTH_B(ASYMETRIC_MODE ? READ_DATA_WIDTH_B : READ_DATA_WIDTH_A),         // DECIMAL
    .READ_LATENCY_A(2),             // DECIMAL
    .READ_LATENCY_B(2),             // DECIMAL
    .READ_RESET_VALUE_A("0"),       // String
