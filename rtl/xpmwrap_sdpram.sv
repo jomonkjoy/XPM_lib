@@ -42,7 +42,7 @@ xpm_memory_sdpram #(
    .CASCADE_HEIGHT(0),             // DECIMAL
    .CLOCKING_MODE(CLOCKING_MODE ? "independent_clock" : "common_clock"), // String
    .ECC_BIT_RANGE("7:0"),          // String
-   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"),  // String 	"no_ecc", "en_ecc"
+   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"),  // String "no_ecc", "en_ecc"
    .ECC_TYPE("none"),              // String
    .IGNORE_INIT_SYNTH(0),          // DECIMAL
    .MEMORY_INIT_FILE("none"),      // String

@@ -34,7 +34,7 @@ xpm_memory_spram #(
    .BYTE_WRITE_WIDTH_A(BYTE_WRITE_WIDTH_A),       // DECIMAL
    .CASCADE_HEIGHT(0),            // DECIMAL
    .ECC_BIT_RANGE("7:0"),         // String
-   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String 	"no_ecc", "en_ecc"
+   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String "no_ecc", "en_ecc"
    .ECC_TYPE("none"),             // String
    .IGNORE_INIT_SYNTH(0),         // DECIMAL
    .MEMORY_INIT_FILE("none"),     // String

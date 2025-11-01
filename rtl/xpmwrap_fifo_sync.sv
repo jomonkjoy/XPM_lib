@@ -29,7 +29,6 @@ module xpmwrap_fifo_sync #(
     output logic prog_empty,
     output logic empty,
     output logic rd_rst_busy,
-    output logic [$clog2(FIFO_WRITE_DEPTH):0] rd_data_count,
     input  logic rd_en,
     // Write port
     output logic overflow,
@@ -38,7 +37,6 @@ module xpmwrap_fifo_sync #(
     output logic full,
     output logic wr_ack,
     output logic wr_rst_busy,
-    output logic [$clog2(FIFO_WRITE_DEPTH):0] wr_data_count,
     input  logic [WRITE_DATA_WIDTH-1:0] din,
     input  logic wr_en,
     input  logic wr_clk,
@@ -51,13 +49,16 @@ module xpmwrap_fifo_sync #(
     input  logic sleep
 );
 
+logic [$clog2(FIFO_WRITE_DEPTH):0] rd_data_count;
+logic [$clog2(FIFO_WRITE_DEPTH):0] wr_data_count;
+
 // xpm_fifo_sync: Synchronous FIFO
 // Xilinx Parameterized Macro, version 2025.1
 
 xpm_fifo_sync #(
    .CASCADE_HEIGHT(0),            // DECIMAL
    .DOUT_RESET_VALUE("0"),        // String
-   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String 	"no_ecc", "en_ecc"
+   .ECC_MODE(ECC_MODE ? "en_ecc" : "no_ecc"), // String "no_ecc", "en_ecc"
    .EN_SIM_ASSERT_ERR("warning"), // String
    .FIFO_MEMORY_TYPE("auto"),     // String     "auto", "block", "distributed"
    .FIFO_READ_LATENCY(1),         // DECIMAL
